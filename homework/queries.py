@@ -1,13 +1,13 @@
 # pylint: disable=broad-exception-raised
 # pylint: disable=import-error
 
+# IMPORTANTE: Asegúrate de que el archivo se llame mapreduce.py (en minúsculas)
 from .mapreduce import hadoop as run_mapreduce_job  # type: ignore
 
 #
 # Columns:
 # total_bill, tip, sex, smoker, day, time, size
 #
-
 
 #
 # SELECT *, tip/total_bill as tip_rate
@@ -129,11 +129,35 @@ def reducer_query_5(sequence):
 
 
 #
-# ??
 # SELECT day, AVG(tip)
 # FROM tips
 # GROUP BY day;
 #
+def mapper_query_6(sequence):
+    """Mapper para promedio"""
+    result = []
+    for index, (_, row) in enumerate(sequence):
+        if index == 0:
+            continue
+        row_values = row.strip().split(",")
+        # day está en la posición 4, tip en la 1
+        result.append((row_values[4], float(row_values[1])))
+    return result
+
+
+def reducer_query_6(sequence):
+    """Reducer para promedio"""
+    sums = {}
+    counts = {}
+    for key, value in sequence:
+        if key not in sums:
+            sums[key] = 0.0
+            counts[key] = 0
+        sums[key] += value
+        counts[key] += 1
+    
+    # Calculamos el promedio para cada día
+    return [(key, sums[key] / counts[key]) for key in sums]
 
 
 #
@@ -177,7 +201,13 @@ def run():
         output_folder="files/query_5/",
     )
 
+    run_mapreduce_job(
+        mapper_fn=mapper_query_6,
+        reducer_fn=reducer_query_6,
+        input_folder="files/input/",
+        output_folder="files/query_6/",
+    )
+
 
 if __name__ == "__main__":
-
     run()
