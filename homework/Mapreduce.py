@@ -1,6 +1,6 @@
-import glob
 import os
 
+import glob
 def hadoop(input_folder, output_folder, mapper_fn, reducer_fn):
 
     def read_records_from_input(input_folder):
@@ -34,3 +34,4 @@ def hadoop(input_folder, output_folder, mapper_fn, reducer_fn):
     create_output_directory(output_folder)
     save_results_to_output(result)
     create_success_file(output_folder)
+Mapreduce
